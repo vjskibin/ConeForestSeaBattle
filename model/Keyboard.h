@@ -11,7 +11,7 @@
 class Keyboard {
 private:
 
-    //==== PRIVATE CLEAR SCREEN METHODS ====
+    //==== FOR CLEAR SCREEN METHODS ====
     static struct termios old, newOne;
     static void initTermios(int);
     static void resetTermios();
@@ -23,7 +23,7 @@ private:
 
 public:
 
-    //==== PUBLIC CLEAR SCREEN METHODS ====
+    //==== CLEAR SCREEN METHODS ====
     static char getch(); //without echo
     static char getche(); //with echo
     //==== END OF CLEAR SCREEN METHODS ===

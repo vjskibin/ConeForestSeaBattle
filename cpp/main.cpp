@@ -6,12 +6,6 @@
 #include "../model/UI.h"
 #include "../model/Keyboard.h"
 
-#ifdef _WIN32
-#include <windows.h>
-#define CLEAR "cls"
-#else //In any other OS
-#define CLEAR "clear"
-#endif
 
 using namespace std;
 
@@ -27,19 +21,27 @@ char getche(); //with echo
 int main()
 {
     setlocale(LC_ALL, "");
+    srand(time(NULL));
+
     cout << "Start a new game? [Press y/n]" << endl;
     char c = Keyboard::getche();
     if (c == 'n' || c == 'N') return 0;
-    system(CLEAR);
-    srand(time(NULL));
-    Player player("human"), computer("AI");
+    UI::clearScreen();
 
+    Player player("human"), computer("AI");
+    std::cout << std::endl << "Press any key to continue..." << std::endl;
+    Keyboard::getch();
 
     UI::clearScreen();
 
     Battle battle;
+
     battle.initPlayers(player,computer);
     battle.prepareForBattle();
+    battle.startBattle();
+    battle.showStats();
+
+
     Keyboard::getch();
     return 0;
 }

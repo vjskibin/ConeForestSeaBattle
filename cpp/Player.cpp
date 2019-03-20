@@ -13,21 +13,21 @@
 
 void Player::initShips()
 {
-    battleship = 0;
-    cruiser[0] = 0;
-    cruiser[1] = 0;
-    for(int i = 0; i < 3; i++)
-        destroyer[i] = 0;
-    for(int i = 0; i < 4; i++)
-        submarine[i] = 0;
+//    battleship = 0;
+//    cruiser[0] = 0;
+//    cruiser[1] = 0;
+//    for(int i = 0; i < 3; i++)
+//        destroyer[i] = 0;
+//    for(int i = 0; i < 4; i++)
+//        submarine[i] = 0;
 }
 
 Player::Player(std::string role) {
     for(int i = 1; i <= 10; i++)
         for(int j = 1; j <= 10; j++)
         {
-            playerArea[i][j] = 0;
-            enemyArea[i][j] = 0;
+            playerArea[i][j] = Player::FREE_CODE;
+            enemyArea[i][j] = Player::UNKNOWN_CODE;
         }
     setRole(role == "human"); //TRUE if human, else FALSE
     setName("Player_" + std::to_string(rand() % 99 + 1)); //name as Player_NN
@@ -244,7 +244,7 @@ void Player::fillArea()
 
     int responseCode = 0;
     while (responseCode != Player::SUCCEDPLACEMENT_CODE)
-        placeShipWithResponse(4,1, responseCode);
+        placeShipWithResponse(4,0, responseCode);
 
     responseCode = 0;
     while (responseCode != Player::SUCCEDPLACEMENT_CODE)
@@ -254,33 +254,33 @@ void Player::fillArea()
     while (responseCode != Player::SUCCEDPLACEMENT_CODE)
         placeShipWithResponse(3,2, responseCode);
 
-    responseCode = 0;
-    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
-        placeShipWithResponse(2,1, responseCode);
-
-    responseCode = 0;
-    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
-        placeShipWithResponse(2,2, responseCode);
-
-    responseCode = 0;
-    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
-        placeShipWithResponse(2,3, responseCode);
-
-    responseCode = 0;
-    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
-        placeShipWithResponse(1,1, responseCode);
-
-    responseCode = 0;
-    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
-        placeShipWithResponse(1,2, responseCode);
-
-    responseCode = 0;
-    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
-        placeShipWithResponse(1,3, responseCode);
-
-    responseCode = 0;
-    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
-        placeShipWithResponse(1,4, responseCode);
+//    responseCode = 0;
+//    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
+//        placeShipWithResponse(2,3, responseCode);
+//
+//    responseCode = 0;
+//    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
+//        placeShipWithResponse(2,4, responseCode);
+//
+//    responseCode = 0;
+//    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
+//        placeShipWithResponse(2,5, responseCode);
+//
+//    responseCode = 0;
+//    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
+//        placeShipWithResponse(1,6, responseCode);
+//
+//    responseCode = 0;
+//    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
+//        placeShipWithResponse(1,7, responseCode);
+//
+//    responseCode = 0;
+//    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
+//        placeShipWithResponse(1,9, responseCode);
+//
+//    responseCode = 0;
+//    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
+//        placeShipWithResponse(1,9, responseCode);
 
 }
 
@@ -289,8 +289,10 @@ void Player::fillArea()
 void Player::areaNavigate(int &x, int &y)
 {
     char direction;
+    x = 1;
+    y = 1;
     UI::clearScreen();
-    printPointedMyArea(x,y);
+    printPointedEnemyArea(x,y);
     direction = Keyboard::getche();
     bool errorOccured = false;
 
@@ -316,7 +318,7 @@ void Player::areaNavigate(int &x, int &y)
                 errorOccured = true;
 
         }
-        printPointedMyArea(x,y);
+        printPointedEnemyArea(x,y);
         if (errorOccured) {
             std::cout << std::endl << "[ERROR] Wrong direction" << std::endl;
             errorOccured = false;
@@ -328,6 +330,36 @@ void Player::areaNavigate(int &x, int &y)
     UI::clearScreen();
 
 }
+
+
+void Player::attack(Player & enemy, int x, int y) {
+    if (enemy.getCellState(x,y) == Player::VERTICALBOAT_CODE || enemy.getCellState(x,y) == Player::HORIZONTALBOAT_CODE)
+    {
+        enemy.setCellState(Player::SHOOT_CODE,x,y);
+        int shipId = -1;
+        shipId = enemy.findShipIdByXY(x,y);
+        setEnemyCellInfo(Player::SHOOT_CODE,x,y);
+        enemy.sayToShipHeGotHit(shipId);
+        if (!enemy.getShipStateById(shipId))
+        {
+            int headX,headY,length;
+            bool rotation;
+            headX = enemy.getHeadX(shipId);
+            headY = enemy.getHeadY(shipId);
+            rotation = enemy.getRotation(shipId);
+            length = enemy.getLength(shipId);
+            enemy.killShip(shipId);
+            addKilledShipOnArea(headX,headY,length,rotation);
+        }//if shipId has all fired cells
+
+
+    }
+    else
+    {
+        setEnemyCellInfo(Player::FREE_CODE,x,y);
+    }
+}
+
 
 void Player::printShipPlacement(bool rotation, int * shipHead, int * shipTail)
 {
@@ -386,6 +418,7 @@ void Player::placeShipWithResponse(int length, int id, int & responseCode) {
     shipHead[1] = 1;
     shipTail[0] = 1;
     shipTail[1] = length;
+    bool errorOccured = false; //error while placing
     bool rotation = true; //horizontal if true, false if vertical
     char direction = 'r'; //and its turns to vertical
     while(direction != 'e') {
@@ -434,10 +467,18 @@ void Player::placeShipWithResponse(int length, int id, int & responseCode) {
                 break;
 
             default:
-                std::cout << std::endl << "[ERROR] Wrong direction";
+                errorOccured = true;
+
         }
+
         printShipPlacement(rotation,shipHead, shipTail);
+        if (errorOccured)
+        {
+            std::cout << std::endl << "[ERROR] Wrong direction" << std::endl;
+        }
+        if (responseCode == Player::FAILEDPLACEMENT_CODE) std::cout << std::endl << "[ERROR] You can't place your ship here" << std::endl;
         direction = Keyboard::getche();
+
     }
     UI::clearScreen();
     bool placedOnArea = true; //tumbler for checking if placement is correct
@@ -514,13 +555,123 @@ void Player::placeShipWithResponse(int length, int id, int & responseCode) {
         responseCode = Player::FAILEDPLACEMENT_CODE;
     }
     else
+    {
+        this->playerFleet[id].setPosition(id,length,shipHead,shipTail,rotation);
+        this->playerFleet[id].setStatus(true);
         responseCode = Player::SUCCEDPLACEMENT_CODE;
+    }
+
 
 }
 
 bool Player::onArea(int i, int j)
 {
     return i >= 1 && i <= 10 && j >= 1 && j <= 10;
+}
+
+short int Player::getCellState(int i, int j) {
+    return playerArea[i][j];
+}
+
+void Player::setCellState(short int state, int i, int j) {
+    playerArea[i][j] = state;
+}
+
+void Player::setEnemyCellInfo(short int state, int i, int j)
+{
+    enemyArea[i][j] = state;
+}
+
+int Player::getAliveShipsCount()
+{
+    int count = 0;
+    for (auto &i : playerFleet)
+    {
+        if(i.getStatus()) count++;
+    }
+    return count;
+}
+
+int Player::findShipIdByXY(int x, int y) {
+    for (auto &i : playerFleet)
+    {
+        if (i.containsCell(x,y))
+        {
+         //   std::cout << std::endl << "Ship ID: " << i.getShipId();
+            return i.getShipId();
+        }
+
+
+    }
+
+}
+
+void Player::sayToShipHeGotHit(int id) {
+    playerFleet[id].addCellInFire();
+
+}
+
+bool Player::getShipStateById(int id)
+{
+    return playerFleet[id].getStatus();
+}
+
+void Player::killShip(int shipId)
+{
+    int headX,headY,length;
+    headX = playerFleet[shipId].getShipHeadi();
+    headY = playerFleet[shipId].getShipHeadj();
+    length = playerFleet[shipId].getShipLength();
+
+    if(playerFleet[shipId].getRotation())
+    {
+        for(int j = headY; j <= headY+length-1; j++)
+        {
+            playerArea[headX][j] = Player::KILLED_CODE;
+
+        }
+
+    }
+    else
+    {
+        for(int i = headY; i <= headY + length - 1; i++)
+            playerArea[i][headY] = Player::KILLED_CODE;
+    }
+
+}
+
+int Player::getHeadX(int shipId)
+{
+    return playerFleet[shipId].getShipHeadi();
+}
+
+int Player::getHeadY(int shipId)
+{
+    return playerFleet[shipId].getShipHeadj();
+}
+
+int Player::getLength(int shipId)
+{
+    return playerFleet[shipId].getShipLength();
+}
+
+bool Player::getRotation(int shipId)
+{
+    return playerFleet[shipId].getRotation();
+}
+
+void Player::addKilledShipOnArea(int headX, int headY, int length, bool rotation)
+{
+    if (rotation) //if horizontal
+    {
+        for(int j = headY; j <= headY + length - 1; j++)
+            setEnemyCellInfo(Player::KILLED_CODE,headX,j);
+    }
+    else
+    {
+        for(int i = headX; i <= headX + length - 1; i++)
+            setEnemyCellInfo(Player::KILLED_CODE, i, headY);
+    }
 }
 
 

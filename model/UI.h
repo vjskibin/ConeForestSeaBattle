@@ -25,7 +25,7 @@ public:
 
     static void printLegend();
     static void clearScreen();
-    static std::string putSymbol(std::string);
+    static void showMenu();
 };
 
 

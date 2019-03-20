@@ -18,6 +18,12 @@ public:
     Battle(Player &, Player &);
     void initPlayers(Player &, Player &);
     void prepareForBattle();
+
+    void incTurn();
+
+    void playerTurn();
+    void enemyTurn();
+
     void startBattle();
     void showStats();
 };

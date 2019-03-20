@@ -30,3 +30,7 @@ void UI::printLegend()
 {
 
 }
+
+void UI::showMenu() {
+
+}
