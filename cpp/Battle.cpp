@@ -29,14 +29,22 @@ void Battle::prepareForBattle() {
 
 void Battle::playerTurn() {
     int x,y;
-    player->areaNavigate(x,y);
-    player->attack(*enemy,x,y);
+    bool turnAgain = true;
+    do {
+        player->areaNavigate(x,y);
+        player->attack(*enemy,x,y,turnAgain);
+    } while (turnAgain);
+
 }
 
 void Battle::enemyTurn() {
-    int x,y;
-    enemy->areaNavigate(x,y);
-    enemy->attack(*player,x,y);
+    int x = 1,y = 1;
+    bool turnAgain = true;
+    do {
+        enemy->areaNavigate(x,y);
+        enemy->attack(*player,x,y,turnAgain);
+    } while (turnAgain);
+
 }
 
 
@@ -45,23 +53,39 @@ void Battle::startBattle() {
     std::cout << "Press any key to start the battle..." << std::endl;
     Keyboard::getch();
 
-
-
     do
     {
         playerTurn();
+        if (enemy->getAliveShipsCount() < 1)
+        {
+            showStats(*player);
+            break;
+        }
+
+
         enemyTurn();
-    } while(enemy->getAliveShipsCount() > 0 && player -> getAliveShipsCount() > 0);
+        if(player->getAliveShipsCount() < 1)
+        {
+            showStats(*enemy);
+            break;
+        }
+
+    } while(true);
 
 
 }
 
-void Battle::showStats() {
-
+void Battle::showStats(Player & player) {
+    UI::clearScreen();
+    std::cout << player.getName() << " won this battle! Congratulations!" << std::endl;
+    Keyboard::getch();
 }
 
 void Battle::incTurn() {
     this->turn++;
+}
+
+void Battle::finish() {
 }
 
 

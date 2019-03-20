@@ -25,7 +25,8 @@ public:
     void enemyTurn();
 
     void startBattle();
-    void showStats();
+    void showStats(Player &);
+    void finish();
 };
 
 

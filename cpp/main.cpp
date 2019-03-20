@@ -5,44 +5,31 @@
 #include "../model/Battle.h"
 #include "../model/UI.h"
 #include "../model/Keyboard.h"
-
-
 using namespace std;
-
-
-//cross platform getch() function
-void resetTermios();
-char getch_(int);
-char getch(); //without echo
-char getche(); //with echo
-//------------------------------
-
 
 int main()
 {
     setlocale(LC_ALL, "");
     srand(time(NULL));
+    char goGame = '0';
 
-    cout << "Start a new game? [Press y/n]" << endl;
-    char c = Keyboard::getche();
-    if (c == 'n' || c == 'N') return 0;
-    UI::clearScreen();
+    while(goGame != '3')
+    {
+        UI::showMenu(goGame);
+        if(goGame == '1')
+        {
+            Battle battle;
 
-    Player player("human"), computer("AI");
-    std::cout << std::endl << "Press any key to continue..." << std::endl;
-    Keyboard::getch();
+            Player player("human"), computer("AI");
+            battle.initPlayers(player,computer);
 
-    UI::clearScreen();
+            battle.prepareForBattle();
+            battle.startBattle();
+            battle.finish();
+        }
 
-    Battle battle;
+    }
 
-    battle.initPlayers(player,computer);
-    battle.prepareForBattle();
-    battle.startBattle();
-    battle.showStats();
-
-
-    Keyboard::getch();
     return 0;
 }
 

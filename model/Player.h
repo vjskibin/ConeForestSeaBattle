@@ -20,10 +20,7 @@ private:
 //    Ship submarines[4];
     Ship playerFleet[10];
 
-    unsigned short int battleshipsCount;
-    unsigned short int cruisersCount;
-    unsigned short int destroyersCount;
-    unsigned short int submarinesCount;
+
 
 
 public:
@@ -60,11 +57,12 @@ public:
     void printPointedEnemyArea(int i, int j);
     void printPointedMyArea(int, int);
     void areaNavigate(int&, int&);
-    void attack(Player &,int,int);
+    void attack(Player &,int,int,bool&);
 
     short int getCellState(int,int);
     void setCellState(short int, int, int);
     void setEnemyCellInfo(short int, int, int);
+    short int getEnemyCellInfo(int, int);
     void sayToShipHeGotHit(int);
     int findShipIdByXY(int, int);
     bool getShipStateById(int);

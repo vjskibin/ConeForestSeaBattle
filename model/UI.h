@@ -25,7 +25,8 @@ public:
 
     static void printLegend();
     static void clearScreen();
-    static void showMenu();
+    static void showMenu(char &);
+    static void showHelp();
 };
 
 
