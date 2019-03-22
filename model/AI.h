@@ -14,9 +14,11 @@ private:
 
     static void findUnknownCellNearby(Player &, int, int, int *);
     static bool unknownCellsNearby(Player &, int, int);
+    static bool nicePlace(Player &, int headX, int headY, int length, bool rot);
 public:
 
     static void recommendHitForPlayer(Player &, int *);
+    static void recommendAndSetShipPlacement(Player &, int len, int id);
 
 };
 

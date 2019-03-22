@@ -66,12 +66,15 @@ void UI::showHelp() {
     UI::clearScreen();
     cout << endl << "=================== SUPER MEGA ULTRA UBER HELP FOR U =====================";
     cout << endl;
+    cout << endl << "W A S D - movements";
+    cout << endl << "R - rotate ship";
+    cout << endl << "E - set/choose";
     cout << endl << UI::UNKNOWN << " - unknown cell";
     cout << endl << UI::FREE << " - the cell with no ship";
     cout << endl << UI::SHOOT << " - the cell that was shot down";
     cout << endl << UI::KILLED << " - just a part of a killed ship";
     cout << endl << UI::CURSOR << " - the cell you aim at";
-    cout << endl << "Press E to point everything.";
+    cout << endl;
     cout << endl << "E. Back";
     cout << endl;
     cout << endl << "==========================================================================";

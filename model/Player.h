@@ -74,6 +74,7 @@ public:
     void killShip(int);
 
     void placeShipWithResponse(int length, int id, int &);
+    void setPlayerFleet(int id, int length, int * shipHead, int * shipTail, bool rotation);
     void printShipPlacement(bool, int*, int*);
 
     int getAliveShipsCount();

@@ -200,95 +200,92 @@ void Player::printPointedEnemyArea(int iSelected, int jSelected)
     }
 }
 
-void Player::printPointedMyArea(int iSelected, int jSelected)
-{
-    for(int i = 1; i <= 10; i++)
-    {
-        for(int j = 1; j <= 10; j++)
-        {
-            if (i == iSelected && j == jSelected)
-            {
-                std::cout << UI::CURSOR << " ";
-            }
-            else
-            {
-                switch (playerArea[i][j])
-                {
-                    case Player::UNKNOWN_CODE:
-                        std::cout << UI::UNKNOWN << " ";
-                        break;
-
-                    case Player::FREE_CODE:
-                        std::cout << UI::FREE << " ";
-                        break;
-
-                    case Player::KILLED_CODE:
-                        std::cout << UI::KILLED << " ";
-                        break;
-                    case Player::SHOOT_CODE:
-                        std::cout << UI::SHOOT << " ";
-                        break;
-                    case Player::NEARBY_CODE:
-                        std::cout << "X" << " ";
-                        break;
-
-                    default:
-                        std::cout << "? ";
-                        break;
-                }
-            }
-        }
-        std::cout << std::endl;
-    }
-}
-
-
-
 void Player::fillArea()
 {
     UI::clearScreen();
-    std::cout << "Now fills: " << getRole() << " as " << getName() << std::endl << "Press any key to continue... ";
+    std::cout << "Now fills: " << getName() << std::endl;
+
+    if (!getRole())
+    {
+        Keyboard::getch();
+        std::cout << "Computer already placed his ships!" << std::endl;
+    }
+    std::cout << "Press any key to continue... ";
     Keyboard::getch();
 
     int responseCode = 0;
-    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
-        placeShipWithResponse(4,0, responseCode);
+    int length = 4;
 
-    responseCode = 0;
-    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
-        placeShipWithResponse(3,1, responseCode);
+    for(int id = 0; id < 10; id++)
+    {
+        switch (id)
+        {
+            case 0: length = 4;
+                break;
+            case 1:
+                length = 3;
+                break;
 
-    responseCode = 0;
-    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
-        placeShipWithResponse(3,2, responseCode);
+            case 3:
+                length = 2;
+                break;
 
-    responseCode = 0;
-    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
-        placeShipWithResponse(2,3, responseCode);
+            case 6:
+                length = 1;
+            default:
+                break;
+        }
 
-    responseCode = 0;
-    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
-        placeShipWithResponse(2,4, responseCode);
+        if (getRole()) //if human plays
+        {
+            responseCode = 0;
+            while (responseCode != Player::SUCCEDPLACEMENT_CODE)
+            {
+                placeShipWithResponse(length, id, responseCode);
+            }
+        }
+        else //if computer
+            AI::recommendAndSetShipPlacement(*this, length, id);
+    }
 
-    responseCode = 0;
-    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
-        placeShipWithResponse(2,5, responseCode);
 
-    responseCode = 0;
-    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
-        placeShipWithResponse(1,6, responseCode);
 
-    responseCode = 0;
-    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
-        placeShipWithResponse(1,7, responseCode);
 
-    responseCode = 0;
-    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
-        placeShipWithResponse(1,9, responseCode);
+//    responseCode = 0;
+//    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
+//        placeShipWithResponse(3,1, responseCode);
+//
+//    responseCode = 0;
+//    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
+//        placeShipWithResponse(3,2, responseCode);
+//
+//    responseCode = 0;
+//    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
+//        placeShipWithResponse(2,3, responseCode);
 
-    responseCode = 0;
-    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
-        placeShipWithResponse(1,9, responseCode);
+//    responseCode = 0;
+//    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
+//        placeShipWithResponse(2,4, responseCode);
+//
+//    responseCode = 0;
+//    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
+//        placeShipWithResponse(2,5, responseCode);
+//
+//    responseCode = 0;
+//    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
+//        placeShipWithResponse(1,6, responseCode);
+//
+//    responseCode = 0;
+//    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
+//        placeShipWithResponse(1,7, responseCode);
+//
+//    responseCode = 0;
+//    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
+//        placeShipWithResponse(1,8, responseCode);
+//
+//    responseCode = 0;
+//    while (responseCode != Player::SUCCEDPLACEMENT_CODE)
+//        placeShipWithResponse(1,9, responseCode);
 
 }
 
@@ -302,7 +299,7 @@ void Player::areaNavigate(int &x, int &y)
     std::cout << getName() << "'s turn: " << std::endl;
     printPointedEnemyArea(x,y);
     direction = Keyboard::getche();
-    if (!getRole())
+    if (!getRole()) //if computer plays
     {
         int recommendedHit[2];
         AI::recommendHitForPlayer(*this, recommendedHit);
@@ -353,7 +350,7 @@ void Player::areaNavigate(int &x, int &y)
 
 void Player::attack(Player & enemy, int x, int y,bool & turnAgain) {
     bool dumb = false;
-    if (enemy.getCellState(x,y) == Player::VERTICALBOAT_CODE || enemy.getCellState(x,y) == Player::HORIZONTALBOAT_CODE)
+    if ((enemy.getCellState(x,y) == Player::VERTICALBOAT_CODE || enemy.getCellState(x,y) == Player::HORIZONTALBOAT_CODE)  && getEnemyCellInfo(x,y) == Player::UNKNOWN_CODE)
     {
         enemy.setCellState(Player::SHOOT_CODE,x,y);
         int shipId = -1;
@@ -374,7 +371,7 @@ void Player::attack(Player & enemy, int x, int y,bool & turnAgain) {
 
         turnAgain = enemy.getAliveShipsCount() >= 1;
     }
-    else if ((enemy.getCellState(x,y) == Player::FREE_CODE || enemy.getCellState(x,y) == Player::NEARBY_CODE) && getEnemyCellInfo(x,y) == Player::UNKNOWN_CODE)
+    else if (getEnemyCellInfo(x,y) == Player::UNKNOWN_CODE)
     {
         setEnemyCellInfo(Player::FREE_CODE,x,y);
         turnAgain = false;
@@ -392,28 +389,6 @@ void Player::attack(Player & enemy, int x, int y,bool & turnAgain) {
     else if (!turnAgain && !dumb) std::cout << "Press any key for the next turn..." << std::endl;
     else std::cout << "Nice hit!" << std::endl;
 
-    if(!getRole())
-    {
-        if(getEnemyCellInfo(x + 1, y) == Player::UNKNOWN_CODE)
-        {
-            std::cout << std::endl << "i+1: " << x + 1 << " j: " << y << std::endl;
-        }
-
-        else if(getEnemyCellInfo(x - 1, y) == Player::UNKNOWN_CODE)
-        {
-            std::cout << std::endl << "i-1: " << x - 1 << " j: " << y << std::endl;
-        }
-
-        else if(getEnemyCellInfo(x, y + 1) == Player::UNKNOWN_CODE)
-        {
-            std::cout << std::endl << "i: " << x << " j + 1: " << y + 1 << std::endl;
-        }
-
-        else if(getEnemyCellInfo(x, y - 1) == Player::UNKNOWN_CODE)
-        {
-            std::cout << std::endl << "i: " << x + 1 << " j - 1: " << y - 1 << std::endl;
-        }
-    }
 
     Keyboard::getch();
 
@@ -623,6 +598,12 @@ void Player::placeShipWithResponse(int length, int id, int & responseCode) {
 
 }
 
+void Player::setPlayerFleet(int id, int length, int * shipHead, int * shipTail, bool rotation)
+{
+    this->playerFleet[id].setPosition(id,length,shipHead,shipTail,rotation);
+    this->playerFleet[id].setStatus(true);
+}
+
 bool Player::onArea(int i, int j)
 {
     return i >= 1 && i <= 10 && j >= 1 && j <= 10;
@@ -703,10 +684,6 @@ void Player::killShip(int shipId)
             playerArea[i][headY] = Player::KILLED_CODE;
     }
 
-    if (getAliveShipsCount() < 1)
-    {
-
-    }
 
 }
 
