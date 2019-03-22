@@ -13,20 +13,20 @@
 class UI {
 public:
 
-    static const std::string UNKNOWN;
-    static const std::string FREE;
-    static const std::string SHOOT;
-    static const std::string KILLED;
-    static const std::string CURSOR;
+    //коды символов:
+    static const std::string UNKNOWN; //неизвестной клетки
+    static const std::string FREE; //свободной
+    static const std::string SHOOT; //подстреленной
+    static const std::string KILLED; //убитой
+    static const std::string CURSOR; //курсора
 
-    static const std::string VERTICALBOAT;
-    static const std::string HORIZONTALBOAT;
+    static const std::string VERTICALBOAT; //вертикального корабля
+    static const std::string HORIZONTALBOAT; //горизонтального корабля
 
 
-    static void printLegend();
-    static void clearScreen();
-    static void showMenu(char &);
-    static void showHelp();
+    static void clearScreen(); //функция очистки экрана
+    static void showMenu(char &); //показать меню
+    static void showHelp(); //показать окно с помощью
 };
 
 

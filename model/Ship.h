@@ -18,22 +18,39 @@ private:
     bool isAlive;
 
 public:
+    //конструктор
     Ship();
+
+    //сохраняет переданную инфу о корабле в инстанс
+    //shipId - очевидно
+    //shipLength - длина корабля
+    //shipHead - массив координат головы корабля
+    //shipTail - массив коорднат хвоста корабля
+    //rotation - true, если расположен горизонтально, иначе вертикально
     void setPosition(int shipId, int shipLength, int * shipHead, int * shipTail, bool rotation);
+
+    //устанаваливает, жив корабль или нет, true, если да
     void setStatus(bool isAlive);
 
+    //геттеры
     int getShipId();
     bool getStatus();
-    void setShipId(int shipId);
-
     int getShipLength();
-
-    void setShipLength(int shipLength);
     int getShipHeadi();
     int getShipHeadj();
     bool getRotation();
+
+    //сеттеры
+    void setShipLength(int shipLength);
+    void setShipId(int shipId);
+
+    // возаращет true, если корабль содержит клетку с переданными координатами
     bool containsCell(int, int);
+
+    //увеличивает количество раненых клеток
     void addCellInFire();
+
+    //возвращает true, если все клетки корабля ранены
     bool allCellsInFire();
 };
 

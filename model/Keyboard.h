@@ -11,6 +11,9 @@
 class Keyboard {
 private:
 
+    //Абсолютно все здесь работает по волшебству, все эти методы нужны для того,
+    //чтобы функции getch() и getche() работали одновременно и на маке, и на виндовсе
+
     //==== FOR CLEAR SCREEN METHODS ====
     static struct termios old, newOne;
     static void initTermios(int);

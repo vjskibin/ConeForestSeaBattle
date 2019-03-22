@@ -6,6 +6,7 @@
 #include "../model/Keyboard.h"
 #include "../model/UI.h"
 
+//
 void AI::findUnknownCellNearby(Player & player, int i, int j, int * recommendedHit)
 {
     if(player.getEnemyCellInfo(i + 1, j) == Player::UNKNOWN_CODE)
@@ -155,6 +156,7 @@ void AI::recommendAndSetShipPlacement(Player & player, int length, int id) {
 //    Keyboard::getch();
 //    UI::clearScreen();
 }
+
 
 bool AI::nicePlace(Player & player, int headX, int headY, int length, bool rotation) {
 
